@@ -14,6 +14,7 @@ countries = {
 start_date = "2020-01-01"
 first_death = "2020-03-12"
 lockdown_day_of_year = 72 # March 12
+truncate_tail = 50
 
 # Data souce (FHM) https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/bekraftade-fall-i-sverige/
 new_deaths = {
@@ -35,7 +36,7 @@ novus = np.interp(x=t,
 
 for country in new_deaths:
     for i in range(5):
-    new_deaths[country] = np.convolve(new_deaths[country], [0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006], 'same') # Gaussian filter
+        new_deaths[country] = np.convolve(new_deaths[country], [0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006], 'same') # Gaussian filter
 
 x_dates = pd.date_range(start_date, periods=n_samples, freq='D')
 
@@ -50,18 +51,17 @@ colors = {
 decline_start = 115
 area_se = new_deaths["sweden"] / max(new_deaths["sweden"])
 area_no = new_deaths["norway"] / max(new_deaths["norway"])
-area_decline_se = area_se
-area_decline_no = area_no
-area_decline_se[0:decline_start] = area_decline_se[decline_start]
-area_decline_no[0:decline_start] = area_decline_se[decline_start]
+area_decline_se = area_se[decline_start:]
+area_decline_no = area_no[decline_start:]
 
 area_decline_diff = area_decline_se - area_decline_no
+area = (sum(area_decline_se) - sum(area_decline_no)) / sum(area_se)
 
-print("se area", sum(area_se))
-print("no area", sum(area_no))
-print("diff area", sum(area_se) - sum(area_no))
-print("diff decline", sum(area_decline_se) - sum(area_decline_no))
-print("separt", (sum(area_decline_se) - sum(area_decline_no)) / sum(area_se))
+print("se area tot", sum(area_se))
+print("no area tot", sum(area_no))
+print("diff area tot", sum(area_se) - sum(area_no))
+print("diff decline", sum(area_decline_diff))
+print("separt", area)
 
 
 fig = plt.figure(facecolor='w')
@@ -69,7 +69,7 @@ ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
 for country in countries:
     ax.plot(x_dates, new_deaths[country] / max(new_deaths[country]), colors[country], alpha=0.8, lw=1.5, label=countries[country])
 
-ax.fill_between(x_dates, area_decline_se, area_decline_no, 'g', alpha=0.5)
+ax.fill_between(x_dates[decline_start:], area_decline_se, area_decline_no, 'g', alpha=0.5)
 
 ax.yaxis.set_tick_params(length=0)
 ax.xaxis.set_tick_params(length=0)
@@ -79,5 +79,9 @@ legend = ax.legend()
 legend.get_frame().set_alpha(0.5)
 for spine in ('top', 'right', 'bottom', 'left'):
     ax.spines[spine].set_visible(False)
+
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.0)
+ax.text(0.52, 0.5, "%0.1f %%" % (area*100), color='w', transform=ax.transAxes, fontsize=14,
+        verticalalignment='top', bbox=props)
 
 plt.show()
