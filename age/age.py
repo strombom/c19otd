@@ -16,7 +16,7 @@ iva_string = '"Datum","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-
 dod_string = '"Datum","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-"'
 
 start_date = date(2020, 3, 26)
-end_date = date(2020, 10, 23)
+end_date = date(2020, 11, 6)
 previous_xl_file = None
 for single_date in daterange(start_date, end_date):
     filename = '../../other/covid/data/FHM/Folkhalsomyndigheten_Covid19_' + single_date.strftime("%Y-%m-%d") + '.xlsx'

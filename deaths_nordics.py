@@ -8,7 +8,7 @@ from scipy.stats import lognorm
 
 countries = {
     "sweden": 'Sweden',
-    "norway": 'Norway'
+    "finland": 'Finland'
 }
 
 start_date = "2020-01-01"
@@ -50,7 +50,7 @@ colors = {
 
 decline_start = 115
 area_se = new_deaths["sweden"] / max(new_deaths["sweden"])
-area_no = new_deaths["norway"] / max(new_deaths["norway"])
+area_no = new_deaths["finland"] / max(new_deaths["finland"])
 area_decline_se = area_se[decline_start:]
 area_decline_no = area_no[decline_start:]
 
@@ -81,7 +81,7 @@ for spine in ('top', 'right', 'bottom', 'left'):
     ax.spines[spine].set_visible(False)
 
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.0)
-ax.text(0.52, 0.5, "%0.1f %%" % (area*100), color='w', transform=ax.transAxes, fontsize=14,
+ax.text(0.53, 0.5, "%0.1f %%" % (area*100), color='w', transform=ax.transAxes, fontsize=14,
         verticalalignment='top', bbox=props)
 
 plt.show()
